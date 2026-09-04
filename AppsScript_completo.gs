@@ -8,16 +8,10 @@ const DRIVE_FOLDER_ID = '1Arp6FIA2wCaNU5meZjnhq8crCwRSdrhg';
 const CONDICOES_FILE_ID = '1fx7ZJm8mBgXvbAKEpt5FNMrMseG3CWTA';
 const NOTION_TOKEN = 'COLA_AQUI_O_TEU_TOKEN_NOTION'; // NUNCA colocar a chave real aqui se este ficheiro for para o GitHub — cola a chave real apenas dentro do editor do Apps Script
 const NOTION_CLIENTES_DS = '32f027b4-6dc5-80ef-a72b-000bc07bbfdb';
-const APP_TOKEN = 'psxAMJ88yrsbXXKe5osvo789iHJ6JxvhbkBP1oPn14k'; // tem de ser igual ao APP_TOKEN no index.html — protege o script de pedidos externos
 
 function doPost(e) {
   try {
     const payload = JSON.parse(e.postData.contents);
-
-    if (payload.token !== APP_TOKEN) {
-      return resposta({ ok: false, erro: 'Não autorizado.' });
-    }
-
     const action = payload.action;
     let result;
 
@@ -128,7 +122,7 @@ function guardarOrcamento(d) {
     sheet.setFrozenRows(1);
   }
 
-  const id = d.id || Date.now().toString();
+  const id = d.id || ('ID' + Date.now());
   const agora = new Date().toISOString();
 
   const row = [

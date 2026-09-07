@@ -149,8 +149,20 @@ nav a.on{color:var(--am);border-bottom-color:var(--am)}
 }
 @media(max-width:640px){
 .fg,.fg3{grid-template-columns:1fr}.full{grid-column:1}
-.srv-hdr,.srv-row{grid-template-columns:2fr 70px 55px 28px}
-.srv-hdr span:nth-child(2),.srv-row textarea{display:none}
+.srv-hdr{grid-template-columns:2fr 55px 45px 55px 26px}
+.srv-hdr span:nth-child(2){display:none}
+.srv-row{
+  display:grid;
+  grid-template-columns:2fr 55px 45px 55px 26px;
+  grid-template-areas:"nome preco qtd total del" "desc desc desc desc desc";
+  row-gap:5px;
+}
+.srv-row input:nth-child(1){grid-area:nome}
+.srv-row textarea{grid-area:desc;display:block!important;height:40px}
+.srv-row input[type="number"]{grid-area:preco}
+.srv-row input:nth-child(4){grid-area:qtd}
+.srv-row .tc{grid-area:total}
+.srv-row .del{grid-area:del}
 .acts{flex-wrap:wrap}.acts .btn{flex:1;justify-content:center}
 .add-row{flex-direction:column}.add-row select,.add-row .btn{width:100%}
 .hi{flex-direction:column;align-items:flex-start}.hi-acts{width:100%;justify-content:flex-end}

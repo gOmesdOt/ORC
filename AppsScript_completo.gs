@@ -125,6 +125,19 @@ function guardarOrcamento(d) {
   const id = d.id || ('ID' + Date.now());
   const agora = new Date().toISOString();
 
+  // Verificar se já existe uma linha com este ID (evita duplicados quando o
+  // mesmo orçamento é sincronizado mais do que uma vez)
+  const dados = sheet.getDataRange().getValues();
+  let linhaExistente = -1;
+  let estadoExistente = 'Pendente';
+  for (let i = 1; i < dados.length; i++) {
+    if (dados[i][0].toString() === id.toString()) {
+      linhaExistente = i + 1; // +1 porque as linhas do Sheets começam em 1
+      estadoExistente = dados[i][21] || 'Pendente'; // coluna V = Estado
+      break;
+    }
+  }
+
   const row = [
     id, d.num, d.versao || 'v1', d.data, d.validade,
     d.nomeProjeto, d.dataRealizacao || '',
@@ -133,10 +146,15 @@ function guardarOrcamento(d) {
     d.projDesc || '', d.sinalPct || 0, d.sinalEur || 0,
     JSON.stringify(d.linhas || []), d.total,
     d.notaPrazo || '', d.notaRev || '', d.notaPag || '', d.notaExtra || '',
-    'Pendente', d.linkPDF || '', agora
+    estadoExistente, d.linkPDF || '', agora
   ];
 
-  sheet.appendRow(row);
+  if (linhaExistente > 0) {
+    sheet.getRange(linhaExistente, 1, 1, row.length).setValues([row]);
+  } else {
+    sheet.appendRow(row);
+  }
+
   return { ok: true, id };
 }
 

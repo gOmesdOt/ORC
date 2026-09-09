@@ -486,13 +486,37 @@ function renderCalendario(){
   resumo.textContent=n===0?'Nenhuma data selecionada.':n+' data'+(n>1?'s':'')+' selecionada'+(n>1?'s':'')+'.';
 }
 
+function joinPt(itens){
+  if(itens.length===0)return '';
+  if(itens.length===1)return itens[0];
+  if(itens.length===2)return itens[0]+' e '+itens[1];
+  return itens.slice(0,-1).join(', ')+' e '+itens[itens.length-1];
+}
+
 function confirmarCalendario(){
   const datasOrdenadas=Array.from(calSelecionadas).sort();
-  const formatadas=datasOrdenadas.map(iso=>{
+
+  // agrupar por mes+ano para nao repetir "de mes" em dias do mesmo mes
+  const grupos=[]; // [{ano,mes,dias:[]}]
+  datasOrdenadas.forEach(iso=>{
     const [a,m,d]=iso.split('-').map(Number);
-    return new Date(a,m-1,d).toLocaleDateString('pt-PT',{day:'numeric',month:'long',year:'numeric'});
+    let g=grupos.find(x=>x.ano===a&&x.mes===m);
+    if(!g){g={ano:a,mes:m,dias:[]};grupos.push(g);}
+    g.dias.push(d);
   });
-  document.getElementById('proj-dreal').value=formatadas.join(' e ');
+
+  const todosMesmoAno=grupos.every(g=>g.ano===grupos[0].ano);
+
+  const partes=grupos.map(g=>{
+    const diasStr=joinPt(g.dias.map(String));
+    const base=diasStr+' de '+MESES_PT[g.mes-1];
+    return todosMesmoAno?base:base+' de '+g.ano;
+  });
+
+  let resultado=joinPt(partes);
+  if(todosMesmoAno&&grupos.length)resultado+=' de '+grupos[0].ano;
+
+  document.getElementById('proj-dreal').value=resultado;
   document.getElementById('cal-ov').classList.remove('on');
 }
 

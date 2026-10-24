@@ -765,7 +765,10 @@ async function gerarEGuardar(){
   if(!LS.length)return showMsg('Adiciona pelo menos um servico.','er');
 
   showSpin('A gerar PDF no servidor...');
-  const nomeFich=num+'_OR_'+cEmp.replace(/[^a-zA-Z0-9]/g,'_').replace(/_+/g,'_').slice(0,30);
+  const _semAc=t=>t.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const _cliFich=_semAc(cEmp).replace(/[^a-zA-Z0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'').slice(0,30);
+  const _m=num.match(/^(\d{4})-(\d+)$/);
+  const nomeFich=_m?(_m[2]+'_'+_m[1]+'OR_'+_cliFich):(_semAc(num).replace(/[^a-zA-Z0-9]/g,'_')+'_OR_'+_cliFich);
   const htmlOrcamento=gerarPDFhtml();
 
   try{
